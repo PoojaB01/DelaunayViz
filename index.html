@@ -20,6 +20,9 @@
         <div id="addpoint" class="button disable" onclick="addPoints()">
             <img class="icon" src="assets/icons/add_circle_outline-white-18dp.svg"> Add
         </div>
+        <div id="hide" class="button" onclick="toggleVis()">
+            <img class="icon" src="assets/icons/hide_source-white-18dp.svg"> Hide
+        </div>
         <div id="speed">
             <div class="button">
                 <img class="icon" src="assets/icons/speed-white-18dp.svg"> Speed
@@ -45,12 +48,6 @@
                     <label for="voronoi">Voronoi Diagram</label><br>
                     <input type="radio" id="convex-hull" name="graph-selection" value="convex-hull" onchange="radioChange()">
                     <label for="convex-hull">Convex Hull</label><br>
-                    <!-- <input type="radio" id="closest-pair" name="graph-selection" value="closest-pair">
-                    <label for="closest-pair">Closest Pair</label><br>
-                    <input type="radio" id="mst" name="graph-selection" value="mst">
-                    <label for="mst">Minimum Spanning Tree</label><br>
-                    <input type="radio" id="nng" name="graph-selection" value="nng">
-                    <label for="nng">Nearest Neighbour Graph</label><br> -->
                     <input type="radio" id="none" name="graph-selection" value="none" checked="checked" onchange="radioChange()">
                     <label for="none">None</label><br>
                 </form>
