@@ -264,7 +264,7 @@ function computeConvexHull(triangleList, s1, s2, s3) {
             var edges = triangleList[j].getEdges();
             for (k = 0; k < 3; k++) {
                 if (!edges[k].vertex(s1) && !edges[k].vertex(s2) && !edges[k].vertex(s3)) {
-                    var e = document.getElementById(edges[k].id);
+                    var e = drawline(edges[k].start, edges[k].end)
                     if (e != null) {
                         e.style.backgroundColor = "green";
                         e.style.zIndex = 2;
