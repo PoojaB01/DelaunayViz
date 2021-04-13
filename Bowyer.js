@@ -51,7 +51,6 @@ class edge {
     }
 
     eraseEdge() {
-        console.log("deleting ", this.id);
         document.getElementById(this.id).remove();
     }
 
@@ -64,10 +63,15 @@ class edge {
     }
 }
 
+function CCW(p1, p2, p3) {
+    if ((p3.y - p1.y) * (p2.x - p1.x) > (p2.y - p1.y) * (p3.x - p1.x))
+        return 1;
+    else if ((p3.y - p1.y) * (p2.x - p1.x) > (p2.y - p1.y) * (p3.x - p1.x))
+        return 0;
+    else return -1;
+}
+
 function isIntersecting(p1, p2, p3, p4) {
-    function CCW(p1, p2, p3) {
-        return (p3.y - p1.y) * (p2.x - p1.x) > (p2.y - p1.y) * (p3.x - p1.x);
-    }
     return (CCW(p1, p3, p4) != CCW(p2, p3, p4)) && (CCW(p1, p2, p3) != CCW(p1, p2, p4));
 }
 
@@ -121,7 +125,7 @@ class triangle {
     contains(point) {
         if (this.visited)
             return false;
-        return this.circle.radius > distance(point, this.circle.center);
+        return this.circle.radius >= distance(point, this.circle.center);
     }
 
     printTriangle() {
@@ -141,7 +145,19 @@ class triangle {
     }
 
     intersects(p1, p2) {
-        return this.edges[0].intersects(p1, p2) || this.edges[1].intersects(p1, p2) || this.edges[2].intersects(p1, p2);
+        return (this.edges[0].intersects(p1, p2)) ||
+            (this.edges[1].intersects(p1, p2)) ||
+            (this.edges[2].intersects(p1, p2))
+    }
+
+    inSector(v, p) {
+        if (CCW(p, this.p1, this.p2) * CCW(p, this.p2, this.p3) == 1 && this.edges[2].intersects(v, p) && !this.edges[2].vertex(v)) {
+            return true;
+        } else if (CCW(p, this.p2, this.p1) * CCW(p, this.p1, this.p3) == 1 && this.edges[1].intersects(v, p) && !this.edges[1].vertex(v)) {
+            return true;
+        } else if (CCW(p, this.p2, this.p3) * CCW(p, this.p3, this.p1) == 1 && this.edges[0].intersects(v, p) && !this.edges[0].vertex(v)) {
+            return true;
+        } else return false;
     }
 }
 
@@ -163,6 +179,10 @@ function commonEdge(t1, t2) {
         }
     }
     return null;
+}
+
+function distanceTP(t, p) {
+    return Math.min(Math.min(distance(t.p1, p), distance(t.p2, p)), distance(t.p3, p));
 }
 
 // CIRCLE CLASS 
@@ -219,54 +239,80 @@ class triangulation {
         var containingTri = null;
         // Replace this
 
-        console.log("start ", this.triangleList);
-        for (j = 0; j < this.triangleList.length; j++) {
-            if (this.triangleList[j].contains(curPoint) && this.triangleList[j].visited == 0) {
-                containingTri = this.triangleList[j];
-                console.log(j, this.triangleList[j].visited);
-                break;
-            }
-        }
+        // console.log("start ", this.triangleList);
+        // for (j = 0; j < this.triangleList.length; j++) {
+        //     if (this.triangleList[j].contains(curPoint) && this.triangleList[j].visited == 0) {
+        //         containingTri = this.triangleList[j];
+        //         console.log(j, this.triangleList[j].visited);
+        //         break;
+        //     }
+        // }
 
 
         var nn_line = drawline(this.lastpt, curPoint);
         nn_line.style.backgroundColor = 'grey';
         nn_line.style.zIndex = 2;
         var firstTri = null;
+        var nextTri = null;
 
-        // console.log(this.lastTriList.length, this.triangleList.length);
-        // for (j = 0; j < this.lastTriList.length; j++) {
-        //     console.log(this.lastTriList[j].p1.id, this.lastTriList[j].p2.id, this.lastTriList[j].p3.id, this.lastTriList[j].intersects(this.lastpt, curPoint));
-        //     if (this.lastTriList[j].contains(curPoint)) {
-        //         containingTri = this.lastTriList[j];
-        //         break;
-        //     } else if (this.lastTriList[j].intersects(this.lastpt, curPoint)) {
-        //         firstTri = this.lastTriList[j];
-        //         break;
-        //     }
+        for (j = 0; j < this.lastTriList.length; j++) {
 
-        // }
+            if (this.lastTriList[j].contains(curPoint)) {
+                containingTri = this.lastTriList[j];
+                break;
+            } else if (this.lastTriList[j].inSector(this.lastpt, curPoint)) {
+                nextTri = this.lastTriList[j];
+                break;
+                // var neighbours = this.lastTriList[j].getNeighbours();
+                // for (k = 0; k < 3; k++) {
+                //     if (neighbours[k].triangle == null)
+                //         continue;
+                //     if (neighbours[k].triangle.contains(curPoint)) {
+                //         containingTri = neighbours[k].triangle;
+                //         break;
+                //     } else if (neighbours[k].triangle.intersects(this.lastpt, curPoint)) {
+                //         if (nextTri == null) {
+                //             nextTri = neighbours[k].triangle;
+                //         } else if (distanceTP(nextTri, curPoint) > distanceTP(neighbours[k].triangle, curPoint)) {
+                //             nextTri = neighbours[k].triangle;
+                //         }
+                //     }
+                // }
 
-        // while (containingTri == null) {
-        //     var neighbours = firstTri.getNeighbours();
-        //     var nextTri = null;
-        //     for (j = 0; j < 3; j++) {
-        //         if (neighbours[j].triangle == null)
-        //             continue;
-        //         if (neighbours[j].triangle.contains(curPoint)) {
-        //             containingTri = this.lastTriList[j];
-        //             break;
-        //         } else if (neighbours[j].triangle.intersects(this.lastpt, curPoint)) {
-        //             if (nextTri == null) {
-        //                 nextTri = neighbours[j].triangle;
-        //             } else if (distance(nextTri.circle.center, curPoint) > distance(neighbours[j].triangle.circle.center, curPoint)) {
-        //                 nextTri = neighbours[j].triangle;
-        //             }
-        //         }
-        //     }
-        //     firstTri = nextTri;
-        //     console.log(firstTri);
-        // }
+            }
+        }
+        firstTri = nextTri;
+
+        var prevTri = null;
+
+        while (containingTri == null) {
+            if (firstTri == null)
+                return;
+            console.log("firstTri", firstTri.p1.id, firstTri.p2.id, firstTri.p3.id);
+            var neighbours = firstTri.getNeighbours();
+            nextTri = null;
+            for (j = 0; j < 3; j++) {
+                if (neighbours[j].triangle == null || equalTriangle(neighbours[j].triangle, prevTri))
+                    continue;
+                if (neighbours[j].triangle.contains(curPoint)) {
+                    containingTri = neighbours[j].triangle;
+                    break;
+                }
+                // else if (neighbours[j].triangle.intersects(this.lastpt, curPoint)) {
+                //     if (nextTri == null) {
+                //         nextTri = neighbours[j].triangle;
+                //     } else if (distanceTP(nextTri, curPoint) > distance(neighbours[j].triangle, curPoint)) {
+                //         nextTri = neighbours[j].triangle;
+                //     }
+                // }
+                else if (neighbours[j].edge.intersects(this.lastpt, curPoint) && !neighbours[j].edge.vertex(this.lastpt)) {
+                    nextTri = neighbours[j].triangle;
+                }
+
+            }
+            prevTri = firstTri;
+            firstTri = nextTri;
+        }
 
         var triangleQueue = [{
             triangle: containingTri,
@@ -282,12 +328,9 @@ class triangulation {
 
         for (j = 0; j < triangleQueue.length; j++) {
             var neighbours = triangleQueue[j].triangle.getNeighbours();
-            console.log("checking triangle: ", triangleQueue[j].triangle.p1.id, triangleQueue[j].triangle.p2.id, triangleQueue[j].triangle.p3.id);
-
             var k;
             for (k = 0; k < neighbours.length; k++) {
                 if (neighbours[k].triangle != null && neighbours[k].triangle.visited == 0 && neighbours[k].triangle.contains(curPoint)) {
-                    console.log("contained in: ", neighbours[k].triangle);
                     triangleQueue.push(neighbours[k]);
                     neighbours[k].triangle.visited = 1;
                     edgestoremove.push(neighbours[k].edge);
@@ -295,9 +338,6 @@ class triangulation {
                     circles.push(neighbours[k].triangle.circle);
                 } else if (neighbours[k].triangle == null || neighbours[k].triangle.visited == 0) {
                     edgestoadd.push(neighbours[k].edge);
-                    console.log("HEYEYEY", neighbours[k].edge, curPoint);
-                    // edgestoadd.push(new edge(neighbours[k].edge.start, curPoint));
-                    // edgestoadd.push(new edge(neighbours[k].edge.end, curPoint));
                     var newTri = new triangle(neighbours[k].edge.start, neighbours[k].edge.end, curPoint);
                     newTri.addNeighbour(neighbours[k].triangle, neighbours[k].edge);
                     trianglestoadd.push(newTri);
@@ -309,16 +349,14 @@ class triangulation {
             }
         }
 
-        console.log("New triangles: ", trianglestoadd);
         this.lastpt = curPoint;
         this.lastTriList = [...trianglestoadd];
 
         setTimeout(showCircles, (wait / 10) * 3);
-        setTimeout(showBadEdges, (wait / 10) * 6);
+        setTimeout(showBadEdges, (wait / 10) * 5);
         setTimeout(callModify, (wait / 10) * 9);
 
         function showCircles() {
-            console.log("circles", circles);
             for (j = 0; j < circles.length; j++) {
                 var radius = Math.sqrt(circles[j].radius);
                 var circleDiv = document.createElement("div");
@@ -346,7 +384,6 @@ class triangulation {
                     badedge.style.zIndex = 2;
                 }
             }
-            console.log("DONE HERE");
         }
 
         var triangleList = this.triangleList;
@@ -386,11 +423,9 @@ function modifyEdgeList(triangleList, trianglestoadd, s1, s2, s3) {
         if (triangleList[j].visited == 0) {
             if (!(triangleList[j].vertex(s1) || triangleList[j].vertex(s2) || triangleList[j].vertex(s3))) {
                 triangleList[j].printTriangle();
-                console.log("I have printed ", triangleList[j].p1.id, triangleList[j].p2.id, triangleList[j].p3.id);
             }
         }
     }
-    console.log("Triangle List: ", triangleList);
 
     console.log("Choice: ", graphChoice);
     switch (graphChoice) {
@@ -510,7 +545,6 @@ function makeTriangulation() {
     var board = document.getElementById("board");
     var height = 50000;
     var width = 50000;
-    console.log(height, width);
     if (step == -1)
         delaunay = new triangulation(points, height, width);
     step = 0;
@@ -547,7 +581,6 @@ function reset() {
         edgeList[i].remove();
     }
     step = -1;
-    console.log(points);
     points = [];
     console.log("Reset called.");
     document.getElementById("run").style.pointerEvents = 'none';
@@ -562,7 +595,7 @@ function radioChange() {
 }
 
 function setWait(val) {
-    wait = 5000 - val;
+    wait = 8000 - val;
     console.log(wait);
 }
 
