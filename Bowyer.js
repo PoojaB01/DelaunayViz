@@ -227,6 +227,14 @@ class triangulation {
         this.triangleList.push(new triangle(this.s1, this.s2, this.s3, null, null));
         this.lastTriList = [...this.triangleList];
         this.convexHull = [];
+
+        this.pointList.sort(function(p1, p2) {
+            if (p1.x < p2.x) {
+                return -1;
+            } else if (p1.x > p2.x) {
+                return 1;
+            } else return 0;
+        })
     }
     addNewPoint() {
         this.triangulate(this.pointList.length - 1);
