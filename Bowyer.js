@@ -245,16 +245,6 @@ class triangulation {
         var j;
         var curPoint = this.pointList[i];
         var containingTri = null;
-        // Replace this
-
-        // console.log("start ", this.triangleList);
-        // for (j = 0; j < this.triangleList.length; j++) {
-        //     if (this.triangleList[j].contains(curPoint) && this.triangleList[j].visited == 0) {
-        //         containingTri = this.triangleList[j];
-        //         console.log(j, this.triangleList[j].visited);
-        //         break;
-        //     }
-        // }
 
 
         var nn_line = drawline(this.lastpt, curPoint);
@@ -271,21 +261,6 @@ class triangulation {
             } else if (this.lastTriList[j].inSector(this.lastpt, curPoint)) {
                 nextTri = this.lastTriList[j];
                 break;
-                // var neighbours = this.lastTriList[j].getNeighbours();
-                // for (k = 0; k < 3; k++) {
-                //     if (neighbours[k].triangle == null)
-                //         continue;
-                //     if (neighbours[k].triangle.contains(curPoint)) {
-                //         containingTri = neighbours[k].triangle;
-                //         break;
-                //     } else if (neighbours[k].triangle.intersects(this.lastpt, curPoint)) {
-                //         if (nextTri == null) {
-                //             nextTri = neighbours[k].triangle;
-                //         } else if (distanceTP(nextTri, curPoint) > distanceTP(neighbours[k].triangle, curPoint)) {
-                //             nextTri = neighbours[k].triangle;
-                //         }
-                //     }
-                // }
 
             }
         }
@@ -306,13 +281,6 @@ class triangulation {
                     containingTri = neighbours[j].triangle;
                     break;
                 }
-                // else if (neighbours[j].triangle.intersects(this.lastpt, curPoint)) {
-                //     if (nextTri == null) {
-                //         nextTri = neighbours[j].triangle;
-                //     } else if (distanceTP(nextTri, curPoint) > distance(neighbours[j].triangle, curPoint)) {
-                //         nextTri = neighbours[j].triangle;
-                //     }
-                // }
                 else if (neighbours[j].edge.intersects(this.lastpt, curPoint) && !neighbours[j].edge.vertex(this.lastpt)) {
                     nextTri = neighbours[j].triangle;
                 }
