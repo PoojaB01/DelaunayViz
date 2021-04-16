@@ -3,7 +3,7 @@
 
 This is a web portal developed using Vanilla JS to explain the working of Bowyer-Watson Algorithm.
 
-To learn about the algorithm, refer the [presentatio](Presentation.pdf).
+To learn about the algorithm, refer the [presentation](Presentation.pdf).
 
 Access the demonstration using https://poojab01.github.io/DelaunayViz/.
 
