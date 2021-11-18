@@ -10,8 +10,8 @@ Access the demonstration using https://poojab01.github.io/DelaunayViz/.
 ### To run the project:
 Clone the repository.
 ```
-$ git clone https://github.com/PoojaB01/GraphiX.git
+$ git clone https://github.com/PoojaB01/DelaunayViz.git
 ```
-Then go to the directory containing the project and open index.html in the browser.
+Then go to the directory containing the project and open `index.html` in the browser.
 
 
